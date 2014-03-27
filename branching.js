@@ -5,7 +5,7 @@ var W = window.innerWidth;
 var H = window.innerHeight;
 canvas.width = W;
 canvas.height = H;
-var makeBranch = function(){
+var makeBranch = function(mouseCoords){
 
 	//Some variables
 	var length, divergence, reduction, line_width, start_points = [];
@@ -35,7 +35,7 @@ var makeBranch = function(){
 	}
 
   function make_trunk() {
-		var trunk = {x: W/2, y: length, angle: 90};
+		var trunk = {x: mouseCoords.x, y: mouseCoords.y, angle: 90};
 		//It becomes the start point for branches
 		var start_points = []; //empty the start points on every init();
 		start_points.push(trunk);
@@ -43,8 +43,8 @@ var makeBranch = function(){
 		//Y coordinates go positive downwards, hence they are inverted by deducting it
 		//from the canvas height = H
 		ctx.beginPath();
-		ctx.moveTo(trunk.x, 0);
-		ctx.lineTo(trunk.x, trunk.y);
+		ctx.moveTo(trunk.x, trunk.y);
+		ctx.lineTo(trunk.x, 0);
     // randomize color
     var rgb = hsv_to_rgb(Math.random(), Math.random(), 0.95);
     ctx.strokeStyle = "rgb(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ")";
@@ -106,9 +106,9 @@ var makeBranch = function(){
   }
 };
 
-var makeTreeButton = document.getElementById("make_tree");
-makeTreeButton.addEventListener("click", function() {
-  makeBranch();
+document.getElementById("canvas").addEventListener("click", function(clickEvent) {
+  var mouseCoords = relMouseCoords(clickEvent, canvas);
+  makeBranch(mouseCoords);
 });
 
 var clearButton = document.getElementById("clear");
@@ -116,6 +116,24 @@ clearButton.addEventListener("click", function() {
   ctx.fillStyle = "white";
   ctx.fillRect(0, 0, W, H);
 });
+
+var relMouseCoords = function(clickEvent, el){
+  var totalOffsetX = 0;
+  var totalOffsetY = 0;
+  var canvasX = 0;
+  var canvasY = 0;
+
+  do{
+      totalOffsetX += el.offsetLeft;
+      totalOffsetY += el.offsetTop;
+  }
+  while(el = el.offsetParent)
+
+  canvasX = clickEvent.pageX - totalOffsetX;
+  canvasY = clickEvent.pageY - totalOffsetY;
+
+  return {x:canvasX, y:canvasY}
+}
 
 var hsv_to_rgb = function(h, s, v) {
   var h_i = parseInt(h*6);

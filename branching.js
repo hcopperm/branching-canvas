@@ -13,10 +13,6 @@ var makeBranch = function(mouseCoords){
 	init();
 
 	function init() {
-		//filling the canvas white
-		//ctx.fillStyle = "white";
-		//ctx.fillRect(0, 0, W, H);
-
 		//let's draw the trunk of the tree
 		//let's randomise the variables
 		//length of the trunk - 100-150

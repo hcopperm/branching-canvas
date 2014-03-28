@@ -5,7 +5,8 @@ var W = window.innerWidth;
 var H = window.innerHeight;
 canvas.width = W;
 canvas.height = H;
-var makeBranch = function(mouseCoords){
+
+var makeBranch = function(mouseCoords, isFlipped){
 
 	//Some variables
 	var length, divergence, reduction, line_width, start_points = [];
@@ -13,9 +14,6 @@ var makeBranch = function(mouseCoords){
 	init();
 
 	function init() {
-		//filling the canvas white
-		//ctx.fillStyle = "white";
-		//ctx.fillRect(0, 0, W, H);
 
 		//let's draw the trunk of the tree
 		//let's randomise the variables
@@ -40,11 +38,15 @@ var makeBranch = function(mouseCoords){
 		var start_points = []; //empty the start points on every init();
 		start_points.push(trunk);
 
-		//Y coordinates go positive downwards, hence they are inverted by deducting it
-		//from the canvas height = H
+
 		ctx.beginPath();
-		ctx.moveTo(trunk.x, trunk.y);
-		ctx.lineTo(trunk.x, 0);
+    if (isFlipped) {
+		  ctx.moveTo(trunk.x, trunk.y);
+		  ctx.lineTo(trunk.x, 0);
+    } else {
+		  ctx.moveTo(trunk.x, H-50);
+		  ctx.lineTo(trunk.x, H-trunk.y);
+    }
     // randomize color
     var rgb = hsv_to_rgb(Math.random(), Math.random(), 0.95);
     ctx.strokeStyle = "rgb(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ")";
@@ -70,12 +72,19 @@ var makeBranch = function(mouseCoords){
 			var ep1 = get_endpoint(sp.x, sp.y, sp.angle+divergence, length);
 			var ep2 = get_endpoint(sp.x, sp.y, sp.angle-divergence, length);
 
-			//drawing the branches now
-			ctx.moveTo(sp.x, sp.y);
-			ctx.lineTo(ep1.x, ep1.y);
-			ctx.moveTo(sp.x, sp.y);
-			ctx.lineTo(ep2.x, ep2.y);
-
+      if (isFlipped) {
+        //drawing the branches now
+        ctx.moveTo(sp.x, sp.y);
+        ctx.lineTo(ep1.x, ep1.y);
+        ctx.moveTo(sp.x, sp.y);
+        ctx.lineTo(ep2.x, ep2.y);
+      } else {
+        //drawing the branches now
+        ctx.moveTo(sp.x, H-sp.y);
+        ctx.lineTo(ep1.x, H-ep1.y);
+        ctx.moveTo(sp.x, H-sp.y);
+        ctx.lineTo(ep2.x, H-ep2.y);
+      }
 			//Time to make this function recursive to draw more branches
 			ep1.angle = sp.angle+divergence;
 			ep2.angle = sp.angle-divergence;
@@ -92,7 +101,7 @@ var makeBranch = function(mouseCoords){
 		//recursive call - only if length is more than 2.
 		//Else it will fall in an long loop
 		if (length > 2) {
-      setTimeout(branches(new_start_points), 50);
+      setTimeout(branches(new_start_points, isFlipped), 50);
     }
 	}
 
@@ -108,7 +117,9 @@ var makeBranch = function(mouseCoords){
 
 document.getElementById("canvas").addEventListener("click", function(clickEvent) {
   var mouseCoords = relMouseCoords(clickEvent, canvas);
-  makeBranch(mouseCoords);
+  var isFlipped = document.getElementById("vertical").checked;
+  makeBranch(mouseCoords, isFlipped);
+
 });
 
 var clearButton = document.getElementById("clear");

@@ -5,8 +5,8 @@ var W = window.innerWidth;
 var H = window.innerHeight;
 canvas.width = W;
 canvas.height = H;
-
-var makeBranch = function(mouseCoords, isFlipped){
+var stopDrawing = false;
+var makeBranch = function(mouseCoords){
 
 	//Some variables
 	var length, divergence, reduction, line_width, start_points = [];
@@ -14,7 +14,6 @@ var makeBranch = function(mouseCoords, isFlipped){
 	init();
 
 	function init() {
-
 		//let's draw the trunk of the tree
 		//let's randomise the variables
 		//length of the trunk - 100-150
@@ -29,6 +28,7 @@ var makeBranch = function(mouseCoords, isFlipped){
 
 		//This is the end point of the trunk, from where branches will diverge
     var first_start_points = make_trunk();
+		var trunk = {x: mouseCoords.x, y: mouseCoords.y, angle: 90};
 		branches(first_start_points);
 	}
 
@@ -38,20 +38,15 @@ var makeBranch = function(mouseCoords, isFlipped){
 		var start_points = []; //empty the start points on every init();
 		start_points.push(trunk);
 
+		//ctx.beginPath();
 
-		ctx.beginPath();
-    if (isFlipped) {
-		  ctx.moveTo(trunk.x, trunk.y);
-		  ctx.lineTo(trunk.x, 0);
-    } else {
-		  ctx.moveTo(trunk.x, H-50);
-		  ctx.lineTo(trunk.x, H-trunk.y);
-    }
-    // randomize color
-    var rgb = hsv_to_rgb(Math.random(), Math.random(), 0.95);
-    ctx.strokeStyle = "rgb(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ")";
-		ctx.lineWidth = line_width;
-		ctx.stroke();
+		//ctx.moveTo(trunk.x, H);
+		//ctx.lineTo(trunk.x, trunk.y);
+    //// randomize color
+    //var rgb = hsv_to_rgb(Math.random(), Math.random(), 0.95);
+    //ctx.strokeStyle = "rgb(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ")";
+		//ctx.lineWidth = line_width;
+		//ctx.stroke();
     return start_points;
   }
 
@@ -72,19 +67,12 @@ var makeBranch = function(mouseCoords, isFlipped){
 			var ep1 = get_endpoint(sp.x, sp.y, sp.angle+divergence, length);
 			var ep2 = get_endpoint(sp.x, sp.y, sp.angle-divergence, length);
 
-      if (isFlipped) {
-        //drawing the branches now
-        ctx.moveTo(sp.x, sp.y);
-        ctx.lineTo(ep1.x, ep1.y);
-        ctx.moveTo(sp.x, sp.y);
-        ctx.lineTo(ep2.x, ep2.y);
-      } else {
-        //drawing the branches now
-        ctx.moveTo(sp.x, H-sp.y);
-        ctx.lineTo(ep1.x, H-ep1.y);
-        ctx.moveTo(sp.x, H-sp.y);
-        ctx.lineTo(ep2.x, H-ep2.y);
-      }
+
+      //drawing the branches now
+      ctx.moveTo(sp.x, sp.y);
+      ctx.lineTo(ep1.x, ep1.y);
+      ctx.moveTo(sp.x, sp.y);
+      ctx.lineTo(ep2.x, ep2.y);
 			//Time to make this function recursive to draw more branches
 			ep1.angle = sp.angle+divergence;
 			ep2.angle = sp.angle-divergence;
@@ -100,8 +88,8 @@ var makeBranch = function(mouseCoords, isFlipped){
 		ctx.stroke();
 		//recursive call - only if length is more than 2.
 		//Else it will fall in an long loop
-		if (length > 2) {
-      setTimeout(branches(new_start_points, isFlipped), 50);
+		if (!stopDrawing || length > 2) {
+      window.setTimeout(function() {branches(new_start_points)}, 50);
     }
 	}
 
@@ -115,11 +103,13 @@ var makeBranch = function(mouseCoords, isFlipped){
   }
 };
 
-document.getElementById("canvas").addEventListener("click", function(clickEvent) {
+canvas.addEventListener("mouseup", function(clickEvent) {
+  stopDrawing = true;
+});
+canvas.addEventListener("mousedown", function(clickEvent) {
+  stopDrawing = false;
   var mouseCoords = relMouseCoords(clickEvent, canvas);
-  var isFlipped = document.getElementById("vertical").checked;
-  makeBranch(mouseCoords, isFlipped);
-
+  makeBranch(mouseCoords);
 });
 
 var clearButton = document.getElementById("clear");

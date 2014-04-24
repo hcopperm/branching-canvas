@@ -16,12 +16,12 @@ var makeBranch = function(mouseCoords){
 		//let's draw the trunk of the tree
 		//let's randomise the variables
 		//length of the trunk - 100-150
-		length = 100 + Math.round(Math.random()*50);
+		length = 200 + Math.round(Math.random()*50);
 		//angle at which branches will diverge - 10-60
 		divergence = 10 + Math.round(Math.random()*170);
 		//Every branch will be 0.75times of the previous one - 0.5-0.75
 		//with 2 decimal points
-		reduction = Math.round(50 + Math.random()*20)/100;
+		reduction = Math.round(54 + Math.random()*20)/100;
 		//width of the branch/trunk
 		line_width = Math.round(Math.random() * 10);
 

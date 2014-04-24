@@ -5,7 +5,6 @@ var W = window.innerWidth;
 var H = window.innerHeight;
 canvas.width = W;
 canvas.height = H;
-var stopDrawing = false;
 var makeBranch = function(mouseCoords){
 
 	//Some variables
@@ -19,7 +18,7 @@ var makeBranch = function(mouseCoords){
 		//length of the trunk - 100-150
 		length = 100 + Math.round(Math.random()*50);
 		//angle at which branches will diverge - 10-60
-		divergence = 10 + Math.round(Math.random()*50);
+		divergence = 10 + Math.round(Math.random()*170);
 		//Every branch will be 0.75times of the previous one - 0.5-0.75
 		//with 2 decimal points
 		reduction = Math.round(50 + Math.random()*20)/100;
@@ -38,15 +37,6 @@ var makeBranch = function(mouseCoords){
 		var start_points = []; //empty the start points on every init();
 		start_points.push(trunk);
 
-		//ctx.beginPath();
-
-		//ctx.moveTo(trunk.x, H);
-		//ctx.lineTo(trunk.x, trunk.y);
-    //// randomize color
-    //var rgb = hsv_to_rgb(Math.random(), Math.random(), 0.95);
-    //ctx.strokeStyle = "rgb(" + rgb.r + ", " + rgb.g + ", " + rgb.b + ")";
-		//ctx.lineWidth = line_width;
-		//ctx.stroke();
     return start_points;
   }
 
@@ -88,7 +78,7 @@ var makeBranch = function(mouseCoords){
 		ctx.stroke();
 		//recursive call - only if length is more than 2.
 		//Else it will fall in an long loop
-		if (!stopDrawing || length > 2) {
+		if (length > 2) {
       window.setTimeout(function() {branches(new_start_points)}, 50);
     }
 	}
@@ -103,11 +93,8 @@ var makeBranch = function(mouseCoords){
   }
 };
 
-canvas.addEventListener("mouseup", function(clickEvent) {
-  stopDrawing = true;
-});
+
 canvas.addEventListener("mousedown", function(clickEvent) {
-  stopDrawing = false;
   var mouseCoords = relMouseCoords(clickEvent, canvas);
   makeBranch(mouseCoords);
 });
